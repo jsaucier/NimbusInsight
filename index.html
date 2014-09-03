@@ -1,79 +1,399 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+<head> 
+	<title>Nimbus Insight</title>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="css/nimins.min.css" />
+	<link rel="shortcut icon" href="images/ni-152.png" />
+	<link rel="apple-touch-icon" href="images/ni-a-152.png" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="viewport" content="width = device-width, initial-scale = 1, user-scalable = no" />
+	<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="js/jquery.csv-0.71.min.js"></script>
+	<script type="text/javascript" src="js/flowtype.js"></script>
+	<script type="text/javascript" src="https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js"></script>
+	<!--<script type="text/javascript" src="js/nimins.min.js"></script>-->
+	<script type="text/javascript" src="js/nimins.js"></script>
+	<script type="text/javascript" src="js/navigator.js"></script>
+	<script type="text/javascript" src="js/settings.js"></script>
+	<script type="text/javascript" src="js/study.js"></script>
+	<script type="text/javascript" src="js/deck.js"></script>
+	<script type="text/javascript" src="js/card.js"></script>
+	<script type="text/javascript" src="js/editor.js"></script>
+</head>
+<body>
 
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Nimbusinsight : ">
+	<div id="top" class="top">
+		<div class="header">
+			<div class="text">Nimbus Insight</div>
+			<div class="buttons">
+				<div class="button menu">
+					<ul>
+						<li class="import">Import</li>
+						<li class="export">Export</li>
+						<li class="remove">Remove Set</li>
+						<li class="signout">Sign Out</li>
+					</ul>
+					<div class="tooltip">Menu</div>
+				</div>
+				<button class="button new"><div class="tooltip">New Set</div></button>
+				<button class="button load"><div class="tooltip">Load</div></button>
+				<button class="button study"><div class="tooltip">Study</div></button>
+				<button class="button refresh"><div class="tooltip">Refresh</div></button>
+				<button class="button sides"><div class="tooltip">Show Hint</div></button>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+	<div class="top-center"></div>
 
-    <title>Nimbusinsight</title>
-  </head>
+	<div id="content" class="content">
+		<div id="fields" class="fields">
+			<div class="values">
+				<input id="title" class="value" placeholder="Title" type="text" tabindex="1" />
+				<input id="subject" class="value" placeholder="Subject" type="text" tabindex="2" />
+				<input id="folder" class="value" placeholder="Folder" type="text" tabindex="3" />
+			</div>
+		</div>
+		<div id="cards" class="cards">
+			<div class="card new" new="true" data-new-card="true">
+				<div class="header">
+					<div class="title">New Card</div>
+				</div>
+				<div class="sides">
+					<div class="side" side="0" data-side="0">
+						<div class="tools"></div>
+						<div class="text" contenteditable="true"></div>
+						<div class="image">
+							<button class="button remove"><div class="tooltip">Remove</div></button>
+							<img class="img">
+						</div>
+					</div>
+					<div class="side" side="1" data-side="1">
+						<div class="tools"></div>
+						<div class="text" contenteditable="true"></div>
+						<div class="image">
+							<button class="button remove"><div class="tooltip">Remove</div></button>
+							<img class="img">
+						</div>
+					</div>
+					<div class="side" side="2"  data-side="2" style="display: none;">
+						<div class="tools"></div>
+						<div class="text" contenteditable="true"></div>
+						<div class="image">
+							<button class="button remove"><div class="tooltip">Remove</div></button>
+							<img class="img">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-  <body>
+	<div class="bottom-center"></div>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/jsaucier/NimbusInsight">View on GitHub</a>
+	<div id="bottom" class="bottom"></div>
 
-          <h1 id="project_title">Nimbusinsight</h1>
-          <h2 id="project_tagline"></h2>
+	<div id="dropbox" style="display: none;">
+		<div class="window">
+			<div class="title">Dropbox Login</div>
+			<div class="content">
+				<button class="button login">Link Nimbus Insight to Dropbox</button>
+			</div>
+		</div>
+	</div>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/jsaucier/NimbusInsight/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/jsaucier/NimbusInsight/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+	<div id="loading" style="display: block;">
+		<div class="window">
+			<div class="content">
+				<div class="text">Loading...</div>
+			</div>
+		</div>
+	</div>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+	<div id="study">
+		<div class="preload"></div>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+		<div class="card">
+			<div class="side side0">
+				<div class="top"></div>
+				<div class="middle"></div>
+				<div class="bottom"></div>
+			</div>
+			<div class="side side1">
+				<div class="top"></div>
+				<div class="middle"></div>
+				<div class="bottom"></div>
+			</div>
+			<div class="side side2">
+				<div class="top"></div>
+				<div class="middle"></div>
+				<div class="bottom"></div>
+			</div>
+		</div>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+		<div class="header">
+			<button class="button close"></button>
+		</div>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+		<div class="footer">
+			<div class="actions left">
+				<button class="button edit"></button>
+				<button class="button settings"></button>
+			</div>
+			<div class="middle">
+				<div class="status">
+					<div class="set">0/14</div>
+					<div class="stats">
+						<div class="streak">3</div>
+						<div class="known">2</div>
+						<div class="unknown">1</div>
+					</div>
+				</div>
+			</div>
+			<div class="actions right">
+				<button class="button undo"></button>
+				<button class="button known"></button>
+				<button class="button hint"></button>
+				<button class="button unknown"></button>
+			</div>
+		</div>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+		<div class="progress">
+			<div class="bar known"></div>
+			<div class="bar studying"></div>
+			<div class="bar unknown"></div>
+		</div>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+		<div id="settings">
+			<div class="window">
+				<div class="dialog">
+					<div class="content">
+						<div class="title">Card Options</div>
+						<div class="study">
+							<div class="option">
+								<div class="title">Order</div>
+								<div class="control"><button class="button order" /></div>
+							</div>
+							<div class="option">
+								<div class="title">Animation</div>
+								<div class="control"><button class="button animation" /></div>
+							</div>
+							<div class="option">
+								<div class="title">Side One</div>
+								<div class="control"><button class="button side0" /></div>
+							</div>
+							<div class="option">
+								<div class="title">Side Two</div>
+								<div class="control"><button class="button side1" /></div>
+							</div>
+							<div class="option">
+								<div class="title">Side Three</div>
+								<div class="control"><button class="button side2" /></div>
+							</div>
+						</div>
+						<div class="title">Progress Bar Options</div>
+						<div class="progressBar">
+							<div class="option">
+								<div class="title">Display</div>
+								<div class="control"><button class="button progressDisplay" /></div>
+							</div>
+							<div class="option">
+								<div class="title">Align</div>
+								<div class="control"><button class="button progressSide" /></div>
+							</div>
+							<div class="option">
+								<div class="title">Fill</div>
+								<div class="control"><button class="button progressFill" /></div>
+							</div>
+						</div>
+						<div class="buttons">
+							<button class="button confirm" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+	<div id="loadDeck">
+		<div class="window">
+			<div class="title">Load Deck</div>
+			<div class="content">
+				<div class="top">
+					<div class="section">
+						<div class="header">Subjects</div>
+						<div class="subjects"></div>
+					</div>
+					<div class="section">
+						<div class="header">Folders</div>
+						<div class="folders"></div>
+					</div>
+				</div>
+				<div class="bottom">
+					<div class="section">
+						<div class="header">Decks</div>
+						<div class="decks"></div>
+					</div>
+				</div>
+			</div>
+			<div class="buttons">
+				<button class="button study">Study</button>
+				<button class="button new">New</button>
+				<button class="button import">Import</button>
+				<button class="button confirm">OK</button>
+				<button class="button cancel">Cancel</button>
+			</div>
+		</div>
+	</div>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+	<div id="newDeck">
+		<div class="window">
+			<div class="title">New Deck</div>
+			<div class="content">
+				<div class="fields">
+					<div class="field">
+						<div class="value">Title:</div>
+						<div class="input">
+							<input id="newTitle" />
+						</div>
+					</div>
+					<div class="field">
+						<div class="value">Subject:</div>
+						<div class="input">
+							<input id="newSubject" />
+						</div>
+					</div>
+					<div class="field">
+						<div class="value">Folder: (Optional)</div>
+						<div class="input">
+							<input id="newFolder" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="buttons">
+				<button class="button confirm">OK</button>
+				<button class="button cancel">Cancel</button>
+			</div>
+		</div>
+	</div>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-    </div>
+	<div id="dialog">
+		<div class="window">
+			<div class="title"></div>
+			<div class="content">
+				<div class="message"></div>
+				<div class="input">
+					<input type="text">
+					<textarea></textarea>
+				</div>
+			</div>
+			<div class="buttons">
+				<button class="button confirm">OK</button>
+				<button class="button cancel">Cancel</button>
+			</div>
+		</div>
+	</div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Nimbusinsight maintained by <a href="https://github.com/jsaucier">jsaucier</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+	<div id="progress"></div>
 
-    
+	<script id="tools-template" type="text/template">
+		<div id="tools">
+			<div class="tabs">
+				<button class="button clear" data-cmd="clear"><div class="tooltip">Clear</div></button>
+				<button class="button tab active" data-tab="home"><div class="tooltip">Home</div></button>
+				<button class="button tab" data-tab="format"><div class="tooltip">Format</div></button>
+				<button class="button tab" data-tab="characters"><div class="tooltip">Characters</div></button>
+				<button class="button tab" data-tab="fractions"><div class="tooltip">Fractions</div></button>
+				<button class="button create" data-cmd="create"><div class="tooltip">Create Card</div></button>
+			</div>
+			<div class="buttons">
+				<div class="tool-tab active" data-tab="home">
+					<button class="button bold" data-cmd="bold"><div class="tooltip">Bold</div></button>
+					<button class="button underline" data-cmd="underline"><div class="tooltip">Underline</div></button>
+					<button class="button italic" data-cmd="italic"><div class="tooltip">Italic</div></button>
+					<button class="button insertUnorderedList" data-cmd="insertUnorderedList"><div class="tooltip">Unordered List</div></button>
+					<button class="button insertOrderedList" data-cmd="insertOrderedList"><div class="tooltip">Ordered List</div></button>
+					<button class="button indent" data-cmd="indent"><div class="tooltip">Indent</div></button>
+					<button class="button outdent" data-cmd="outdent"><div class="tooltip">Outdent</div></button>
+				</div>
+				<div class="tool-tab" data-tab="format">
+					<button class="button subscript" data-cmd="subscript"><div class="tooltip">Subscript</div></button>
+					<button class="button superscript" data-cmd="superscript"><div class="tooltip">Superscript</div></button>
+					<button class="button removeFormat" data-cmd="removeFormat"><div class="tooltip">Remove Formating</div></button>
+					<button class="button source" data-cmd="source"><div class="tooltip">View Source</div></button>
+					<button class="button addimage" data-cmd="upload"><div class="tooltip">Add Image</div></button>
+					<button class="button format" data-cmd="format"><div class="tooltip">Format Card</div></button>
+				</div>
+				<div class="tool-tab" data-tab="characters">
+					<button class="button alpha" data-cmd="character" data-char="α"><div class="tooltip">Alpha</div></button>
+					<button class="button beta" data-cmd="character" data-char="β"><div class="tooltip">Beta</div></button>
+					<button class="button gamma" data-cmd="character" data-char="ɣ"><div class="tooltip">Gamma</div></button>
+					<button class="button delta" data-cmd="character" data-char="Δ"><div class="tooltip">Delta</div></button>
+					<button class="button epsilon" data-cmd="character" data-char="ϵ"><div class="tooltip">Epsilon</div></button>
+					<button class="button sigma" data-cmd="character" data-char="σ"><div class="tooltip">Sigma</div></button>
+					<button class="button micro" data-cmd="character" data-char="µ"><div class="tooltip">Micro</div></button>
+					<button class="button degree" data-cmd="character" data-char="°"><div class="tooltip">Degree</div></button>
+					<button class="button plusminus" data-cmd="character" data-char="±">±<div class="tooltip">Plus Minus</div></button>
+				</div>
+				<div class="tool-tab" data-tab="fractions">
+					<button class="button onehalf" data-cmd="character" data-char="½"><div class="tooltip">One Half</div></button>
+					<button class="button onefourth" data-cmd="character" data-char="¼"><div class="tooltip">One Fourth</div></button>
+					<button class="button threefourth" data-cmd="character" data-char="¾"><div class="tooltip">Three Fourths</div></button>
+					<button class="button onethird" data-cmd="character" data-char="⅓"><div class="tooltip">One Third</div></button>
+					<button class="button twothird" data-cmd="character" data-char="⅔"><div class="tooltip">Two Thirds</div></button>
+					<button class="button oneeighth" data-cmd="character" data-char="⅛"><div class="tooltip">One Eight</div></button>
+					<button class="button threeeighth" data-cmd="character" data-char="⅜"><div class="tooltip">Three Eighths</div></button>
+					<button class="button fiveeighth" data-cmd="character" data-char="⅝"><div class="tooltip">Five Eighths</div></button>
+					<button class="button seveneighth" data-cmd="character" data-char="⅞"><div class="tooltip">Seven Eighths</div></button>
 
-  </body>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script id="card" type="text/template">
+		<div class="card">
+			<div class="header">
+				<div class="title"></div>
+				<div class="buttons">
+					<button class="button move"><div class="tooltip">Move</div></button>
+					<button class="button remove"><div class="tooltip">Remove</div></button>
+				</div>
+			</div>
+			<div class="sides">
+				<div class="side" side="0" data-side="0">
+					<div class="tools"></div>
+					<div class="text" contenteditable="true"></div>
+					<div class="image">
+						<button class="button remove"><div class="tooltip">Remove</div></button>
+						<img class="img">
+					</div>
+				</div>
+				<div class="side" side="1" data-side="1">
+					<div class="tools"></div>
+					<div class="text" contenteditable="true"></div>
+					<div class="image">
+						<button class="button remove"><div class="tooltip">Remove</div></button>
+						<img class="img">
+					</div>
+				</div>
+				<div class="side" side="2" data-side="2" style="display: none;">
+					<div class="tools"></div>
+					<div class="text" contenteditable="true"></div>
+					<div class="image">
+						<button class="button remove"><div class="tooltip">Remove</div></button>
+						<img class="img">
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+</body>
 </html>
